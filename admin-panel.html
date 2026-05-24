@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdminKit — Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.8.0/dist/tabler-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f5f5f3;
+      --bg-tertiary: #eeede9;
+      --text-primary: #1a1a18;
+      --text-secondary: #6b6b67;
+      --text-tertiary: #9e9e99;
+      --border: rgba(0,0,0,0.10);
+      --border-md: rgba(0,0,0,0.18);
+      --accent: #534AB7;
+      --accent-light: #EEEDFE;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1e1e1c;
+        --bg-secondary: #272725;
+        --bg-tertiary: #161614;
+        --text-primary: #f0f0ee;
+        --text-secondary: #a0a09c;
+        --text-tertiary: #6b6b67;
+        --border: rgba(255,255,255,0.08);
+        --border-md: rgba(255,255,255,0.14);
+        --accent-light: #2e2b5a;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .shell { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 224px;
+      background: var(--bg-primary);
+      border-right: 0.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .logo {
+      padding: 20px 20px 16px;
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: #3C3489;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-icon i { color: #fff; font-size: 17px; }
+    .logo-text { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+    .logo-sub { font-size: 11px; color: var(--text-tertiary); }
+
+    .nav { padding: 12px 10px; flex: 1; overflow-y: auto; }
+    .nav-group { margin-bottom: 22px; }
+    .nav-label {
+      font-size: 10px; font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      padding: 0 8px;
+      margin-bottom: 6px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 2px;
+      transition: background 0.12s, color 0.12s;
+      user-select: none;
+    }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--text-primary); }
+    .nav-item.active { background: var(--accent-light); color: var(--accent); font-weight: 500; }
+    .nav-item i { font-size: 18px; width: 20px; text-align: center; }
+    .nav-badge {
+      margin-left: auto;
+      background: #3C3489; color: #fff;
+      font-size: 10px; font-weight: 600;
+      padding: 2px 7px; border-radius: 20px;
+    }
+
+    .sidebar-footer {
+      padding: 12px 10px;
+      border-top: 0.5px solid var(--border);
+    }
+    .user-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .user-row:hover { background: var(--bg-secondary); }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--accent-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600; color: var(--accent);
+      flex-shrink: 0;
+    }
+    .user-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+    .user-role { font-size: 11px; color: var(--text-secondary); }
+
+    /* ── Main ── */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .topbar {
+      background: var(--bg-primary);
+      border-bottom: 0.5px solid var(--border);
+      padding: 0 24px;
+      height: 56px;
+      display: flex; align-items: center; gap: 14px;
+      flex-shrink: 0;
+    }
+    .page-title { font-size: 15px; font-weight: 600; color: var(--text-primary); flex: 1; }
+    .search-box {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg-secondary);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 7px 12px;
+      width: 210px;
+    }
+    .search-box i { color: var(--text-tertiary); font-size: 15px; }
+    .search-box input {
+      border: none; background: none; outline: none;
+      font-size: 13px; color: var(--text-primary);
+      width: 100%; font-family: inherit;
+    }
+    .search-box input::placeholder { color: var(--text-tertiary); }
+
+    .icon-btn {
+      width: 34px; height: 34px;
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-secondary);
+      border: 0.5px solid var(--border);
+      background: none; font-size: 18px;
+      transition: background 0.12s, color 0.12s;
+      position: relative;
+    }
+    .icon-btn:hover { background: var(--bg-secondary); color: var(--text-primary); }
+    .notif-dot {
+      position: absolute; top: 6px; right: 6px;
+      width: 7px; height: 7px;
+      background: #D85A30; border-radius: 50%;
+      border: 1.5px solid var(--bg-primary);
+    }
+
+    /* ── Content ── */
+    .content { flex: 1; overflow-y: auto; padding: 24px; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .metric-card {
+      background: var(--bg-primary);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+    }
+    .metric-label {
+      font-size: 12px; color: var(--text-secondary);
+      margin-bottom: 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .metric-label i { font-size: 14px; }
+    .metric-value { font-size: 24px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+    .metric-change { font-size: 12px; display: flex; align-items: center; gap: 4px; }
+    .up { color: #3B6D11; } .down { color: #A32D2D; }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 310px;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .panel {
+      background: var(--bg-primary);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .panel-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+    .panel-action { font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 500; }
+    .panel-action:hover { text-decoration: underline; }
+
+    /* Bar chart */
+    .chart-area { padding: 20px 18px; }
+    .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 120px; }
+    .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .bars { display: flex; gap: 3px; align-items: flex-end; height: 100px; }
+    .bar { width: 10px; border-radius: 3px 3px 0 0; }
+    .bar.a { background: #534AB7; }
+    .bar.b { background: #5DCAA5; }
+    .bar-lbl { font-size: 10px; color: var(--text-tertiary); }
+    .chart-legend { display: flex; gap: 14px; margin-top: 12px; }
+    .leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+    .leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* Activity */
+    .activity-list { padding: 0 18px; }
+    .activity-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .act-icon {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 14px; margin-top: 1px;
+    }
+    .act-icon.blue { background: #E6F1FB; color: #185FA5; }
+    .act-icon.green { background: #EAF3DE; color: #3B6D11; }
+    .act-icon.amber { background: #FAEEDA; color: #854F0B; }
+    .act-icon.red { background: #FCEBEB; color: #A32D2D; }
+    .act-main { font-size: 13px; color: var(--text-primary); margin-bottom: 2px; }
+    .act-main span { font-weight: 600; }
+    .act-time { font-size: 11px; color: var(--text-tertiary); }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      text-align: left;
+      font-size: 11px; font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase; letter-spacing: 0.07em;
+      padding: 10px 16px;
+      border-bottom: 0.5px solid var(--border);
+      background: var(--bg-secondary);
+    }
+    tbody td {
+      padding: 12px 16px;
+      font-size: 13px; color: var(--text-primary);
+      border-bottom: 0.5px solid var(--border);
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: var(--bg-secondary); }
+
+    .status {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500;
+    }
+    .status.active { background: #EAF3DE; color: #3B6D11; }
+    .status.pending { background: #FAEEDA; color: #854F0B; }
+    .status.inactive { background: #F1EFE8; color: #5F5E5A; }
+
+    .user-cell { display: flex; align-items: center; gap: 10px; }
+    .mini-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 600; flex-shrink: 0;
+    }
+
+    /* Bottom row */
+    .row-3 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+
+    .donut-wrap {
+      display: flex; align-items: center; justify-content: center;
+      gap: 24px; padding: 20px 18px;
+    }
+    .donut-legend { display: flex; flex-direction: column; gap: 10px; }
+    .dleg { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .dleg-swatch { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .dleg-label { color: var(--text-secondary); }
+    .dleg-val { color: var(--text-primary); font-weight: 600; margin-left: auto; padding-left: 16px; }
+
+    .sparklines { padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+    .spark-row { display: flex; align-items: center; gap: 10px; }
+    .spark-name { font-size: 12px; color: var(--text-secondary); width: 80px; flex-shrink: 0; }
+    .spark-track { flex: 1; height: 6px; background: var(--bg-secondary); border-radius: 4px; overflow: hidden; }
+    .spark-fill { height: 100%; border-radius: 4px; }
+    .spark-val { font-size: 12px; font-weight: 600; color: var(--text-primary); width: 34px; text-align: right; }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon"><i class="ti ti-layout-dashboard"></i></div>
+      <div>
+        <div class="logo-text">AdminKit</div>
+        <div class="logo-sub">v2.4.0</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-group">
+        <div class="nav-label">Utama</div>
+        <div class="nav-item active"><i class="ti ti-home"></i> Dashboard</div>
+        <div class="nav-item"><i class="ti ti-users"></i> Pengguna <span class="nav-badge">248</span></div>
+        <div class="nav-item"><i class="ti ti-shopping-cart"></i> Pesanan</div>
+        <div class="nav-item"><i class="ti ti-chart-bar"></i> Analitik</div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">Konten</div>
+        <div class="nav-item"><i class="ti ti-file-text"></i> Artikel</div>
+        <div class="nav-item"><i class="ti ti-photo"></i> Media</div>
+        <div class="nav-item"><i class="ti ti-tags"></i> Kategori</div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">Sistem</div>
+        <div class="nav-item"><i class="ti ti-shield-check"></i> Keamanan</div>
+        <div class="nav-item"><i class="ti ti-settings"></i> Pengaturan</div>
+        <div class="nav-item"><i class="ti ti-help-circle"></i> Bantuan</div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="avatar">AD</div>
+        <div>
+          <div class="user-name">Admin Duta</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+        <i class="ti ti-chevron-down" style="font-size:14px;color:var(--text-tertiary);margin-left:auto"></i>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <div class="page-title">Dashboard</div>
+      <div class="search-box">
+        <i class="ti ti-search"></i>
+        <input type="text" placeholder="Cari...">
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="icon-btn" title="Notifikasi">
+          <i class="ti ti-bell"></i>
+          <span class="notif-dot"></span>
+        </button>
+        <button class="icon-btn" title="Pengaturan">
+          <i class="ti ti-settings"></i>
+        </button>
+        <div class="avatar" style="cursor:pointer">AD</div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- Metric cards -->
+      <div class="metrics">
+        <div class="metric-card">
+          <div class="metric-label"><i class="ti ti-users" style="color:#534AB7"></i> Total pengguna</div>
+          <div class="metric-value">12,847</div>
+          <div class="metric-change up"><i class="ti ti-trending-up" style="font-size:13px"></i> +8.2% bulan ini</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label"><i class="ti ti-currency-dollar" style="color:#3B6D11"></i> Pendapatan</div>
+          <div class="metric-value">Rp 284 jt</div>
+          <div class="metric-change up"><i class="ti ti-trending-up" style="font-size:13px"></i> +12.5% bulan ini</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label"><i class="ti ti-shopping-bag" style="color:#854F0B"></i> Total pesanan</div>
+          <div class="metric-value">3,290</div>
+          <div class="metric-change down"><i class="ti ti-trending-down" style="font-size:13px"></i> -3.1% bulan ini</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label"><i class="ti ti-star" style="color:#A32D2D"></i> Kepuasan</div>
+          <div class="metric-value">94.7%</div>
+          <div class="metric-change up"><i class="ti ti-trending-up" style="font-size:13px"></i> +1.3% bulan ini</div>
+        </div>
+      </div>
+
+      <!-- Chart + Activity -->
+      <div class="row-2">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Statistik kunjungan</span>
+            <span class="panel-action">Lihat detail</span>
+          </div>
+          <div class="chart-area">
+            <div class="bar-chart" id="bar-chart"></div>
+            <div class="chart-legend">
+              <div class="leg"><div class="leg-dot" style="background:#534AB7"></div> Pengunjung</div>
+              <div class="leg"><div class="leg-dot" style="background:#5DCAA5"></div> Konversi</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Aktivitas terkini</span>
+            <span class="panel-action">Semua</span>
+          </div>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="act-icon blue"><i class="ti ti-user-plus"></i></div>
+              <div>
+                <div class="act-main"><span>Siti Rahma</span> mendaftar akun baru</div>
+                <div class="act-time">2 menit lalu</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="act-icon green"><i class="ti ti-check"></i></div>
+              <div>
+                <div class="act-main">Pesanan <span>#ORD-4821</span> selesai</div>
+                <div class="act-time">14 menit lalu</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="act-icon amber"><i class="ti ti-alert-triangle"></i></div>
+              <div>
+                <div class="act-main">Stok produk <span>hampir habis</span></div>
+                <div class="act-time">1 jam lalu</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="act-icon red"><i class="ti ti-x"></i></div>
+              <div>
+                <div class="act-main">Pesanan <span>#ORD-4817</span> dibatalkan</div>
+                <div class="act-time">2 jam lalu</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User table -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Daftar pengguna</span>
+          <span class="panel-action">+ Tambah pengguna</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Pengguna</th>
+                <th>Email</th>
+                <th>Peran</th>
+                <th>Status</th>
+                <th>Bergabung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="user-cell"><div class="mini-avatar" style="background:#EEEDFE;color:#534AB7">AN</div> Andi Nugroho</div></td>
+                <td style="color:var(--text-secondary)">andi.n@mail.com</td>
+                <td>Editor</td>
+                <td><span class="status active"><i class="ti ti-circle-filled" style="font-size:8px"></i> Aktif</span></td>
+                <td style="color:var(--text-secondary)">12 Jan 2025</td>
+              </tr>
+              <tr>
+                <td><div class="user-cell"><div class="mini-avatar" style="background:#E1F5EE;color:#0F6E56">SR</div> Siti Rahma</div></td>
+                <td style="color:var(--text-secondary)">siti.r@mail.com</td>
+                <td>Pembaca</td>
+                <td><span class="status pending"><i class="ti ti-circle-filled" style="font-size:8px"></i> Pending</span></td>
+                <td style="color:var(--text-secondary)">24 Mei 2026</td>
+              </tr>
+              <tr>
+                <td><div class="user-cell"><div class="mini-avatar" style="background:#FAECE7;color:#993C1D">BP</div> Budi Pratama</div></td>
+                <td style="color:var(--text-secondary)">budi.p@mail.com</td>
+                <td>Admin</td>
+                <td><span class="status active"><i class="ti ti-circle-filled" style="font-size:8px"></i> Aktif</span></td>
+                <td style="color:var(--text-secondary)">5 Mar 2025</td>
+              </tr>
+              <tr>
+                <td><div class="user-cell"><div class="mini-avatar" style="background:#F1EFE8;color:#5F5E5A">DW</div> Dewi Wulan</div></td>
+                <td style="color:var(--text-secondary)">dewi.w@mail.com</td>
+                <td>Editor</td>
+                <td><span class="status inactive"><i class="ti ti-circle-filled" style="font-size:8px"></i> Nonaktif</span></td>
+                <td style="color:var(--text-secondary)">18 Nov 2024</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bottom row -->
+      <div class="row-3">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Distribusi perangkat</span>
+            <span class="panel-action">Detail</span>
+          </div>
+          <div class="donut-wrap">
+            <svg width="110" height="110" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="36" fill="none" stroke="#534AB7" stroke-width="18"
+                stroke-dasharray="135 91" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
+              <circle cx="50" cy="50" r="36" fill="none" stroke="#5DCAA5" stroke-width="18"
+                stroke-dasharray="68 158" stroke-dashoffset="-135" transform="rotate(-90 50 50)"/>
+              <circle cx="50" cy="50" r="36" fill="none" stroke="#EF9F27" stroke-width="18"
+                stroke-dasharray="57 169" stroke-dashoffset="-203" transform="rotate(-90 50 50)"/>
+              <circle cx="50" cy="50" r="22" fill="white"/>
+              <text x="50" y="54" text-anchor="middle" font-size="13" font-weight="600"
+                fill="#1a1a18" font-family="sans-serif">59%</text>
+            </svg>
+            <div class="donut-legend">
+              <div class="dleg"><div class="dleg-swatch" style="background:#534AB7"></div><span class="dleg-label">Mobile</span><span class="dleg-val">59%</span></div>
+              <div class="dleg"><div class="dleg-swatch" style="background:#5DCAA5"></div><span class="dleg-label">Desktop</span><span class="dleg-val">30%</span></div>
+              <div class="dleg"><div class="dleg-swatch" style="background:#EF9F27"></div><span class="dleg-label">Tablet</span><span class="dleg-val">11%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Top halaman</span>
+            <span class="panel-action">Lihat semua</span>
+          </div>
+          <div class="sparklines">
+            <div class="spark-row">
+              <span class="spark-name">Beranda</span>
+              <div class="spark-track"><div class="spark-fill" style="width:88%;background:#534AB7"></div></div>
+              <span class="spark-val">88%</span>
+            </div>
+            <div class="spark-row">
+              <span class="spark-name">Produk</span>
+              <div class="spark-track"><div class="spark-fill" style="width:64%;background:#5DCAA5"></div></div>
+              <span class="spark-val">64%</span>
+            </div>
+            <div class="spark-row">
+              <span class="spark-name">Blog</span>
+              <div class="spark-track"><div class="spark-fill" style="width:47%;background:#EF9F27"></div></div>
+              <span class="spark-val">47%</span>
+            </div>
+            <div class="spark-row">
+              <span class="spark-name">Kontak</span>
+              <div class="spark-track"><div class="spark-fill" style="width:29%;background:#D85A30"></div></div>
+              <span class="spark-val">29%</span>
+            </div>
+            <div class="spark-row">
+              <span class="spark-name">Tentang</span>
+              <div class="spark-track"><div class="spark-fill" style="width:18%;background:#888780"></div></div>
+              <span class="spark-val">18%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+  // Sidebar nav click
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  // Bar chart
+  const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul'];
+  const visitors = [62,75,58,88,72,95,80];
+  const convert  = [28,35,22,48,38,55,42];
+  const chart = document.getElementById('bar-chart');
+  months.forEach((m, i) => {
+    const g = document.createElement('div');
+    g.className = 'bar-group';
+    g.innerHTML = `
+      <div class="bars">
+        <div class="bar a" style="height:${visitors[i]}px"></div>
+        <div class="bar b" style="height:${convert[i]}px"></div>
+      </div>
+      <div class="bar-lbl">${m}</div>`;
+    chart.appendChild(g);
+  });
+</script>
+</body>
+</html>
